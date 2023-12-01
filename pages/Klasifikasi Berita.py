@@ -38,12 +38,12 @@ selected = option_menu(
 if selected == "Summary":
   if st.session_state.summary:
     sentence = st.session_state.tokenSentence
+    closeness = st.session_state.centrality
     st.write("**Hasil Summarization:**")
     st.write(st.session_state.summary)
-    closeness = st.session_state.centrality
     st.write("Nilai Closeness Centrality :")
-    for sent, cln in zip(sentence, closeness):
-      st.write(f"Closeness : {cln} -> Kalimat : {sent}")
+    for i, cls in enumerate(closeness):
+      st.write(f"index {i} Closeness : {closeness[cls]} -> Kalimat : {sentence[i]}")
   
   
 elif selected == "Klasifikasi":
@@ -65,13 +65,13 @@ elif selected == "Klasifikasi":
           prediction = nb.predict(new_text_matrics)
           st.write("Prediction Category : ", prediction[0])
           
-      with menu_smvm:
-          if 'modelSVM.pkl' not in os.listdir("resources"):
-              downloadSVMmodel()
-          svm = joblib.load("resources/modelSVM.pkl")
-          new_text_matrics = vectorizer.transform([new_text]).toarray()
-          prediction = svm.predict(new_text_matrics)
-          st.write("Prediction Category : ", prediction[0])
+      # with menu_smvm:
+      #     if 'modelSVM.pkl' not in os.listdir("resources"):
+      #         downloadSVMmodel()
+      #     svm = joblib.load("resources/modelSVM.pkl")
+      #     new_text_matrics = vectorizer.transform([new_text]).toarray()
+      #     prediction = svm.predict(new_text_matrics)
+      #     st.write("Prediction Category : ", prediction[0])
 
 elif selected == "Graph Kalimat":
   col1, col2 = st.columns(2)
