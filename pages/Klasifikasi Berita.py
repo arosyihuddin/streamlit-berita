@@ -48,30 +48,14 @@ if selected == "Summary":
   
 elif selected == "Klasifikasi":
   if st.session_state.summary:
-      if 'vectorizer.pkl' not in os.listdir("resources"):
-          downloadVectorizer()
-        #   st.session_state.vectorizer = True
-      st.caption("Klasifikasi Berdasarkan Hasil Summarization")
+      st.caption("Klasifikasi Berdasarkan Hasil Summarization (Naive Bayes)")
       new_text = st.session_state.summary
       vectorizer = joblib.load("resources/vectorizer.pkl")
-      
-      menu_nb, menu_smvm = st.tabs(["Naive Bayes", "Support Vector Machine"])
-      with menu_nb:
-          if 'modelNB.pkl' not in os.listdir("resources"):
-              downloadNBmodel()
-          
-          nb = joblib.load("resources/modelNB.pkl")
-          new_text_matrics = vectorizer.transform([new_text]).toarray()
-          prediction = nb.predict(new_text_matrics)
-          st.write("Prediction Category : ", prediction[0])
-          
-      # with menu_smvm:
-      #     if 'modelSVM.pkl' not in os.listdir("resources"):
-      #         downloadSVMmodel()
-      #     svm = joblib.load("resources/modelSVM.pkl")
-      #     new_text_matrics = vectorizer.transform([new_text]).toarray()
-      #     prediction = svm.predict(new_text_matrics)
-      #     st.write("Prediction Category : ", prediction[0])
+      nb = joblib.load("resources/modelNB.pkl")
+      new_text_matrics = vectorizer.transform([new_text]).toarray()
+      prediction = nb.predict(new_text_matrics)
+      st.write("Prediction Category : ", prediction[0])
+     
 
 elif selected == "Graph Kalimat":
   col1, col2 = st.columns(2)
