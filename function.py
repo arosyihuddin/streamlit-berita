@@ -1,4 +1,5 @@
 from nltk.tokenize import sent_tokenize
+from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from streamlit_option_menu import option_menu
@@ -8,11 +9,19 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import pandas as pd
 import re
+import nltk
 import requests 
+
+nltk.download('stopwords')
+nltk.download('punkt')
 
 def cleaning(text):
   text = re.sub(r'[^\w\s.?!,]', '', text).strip().lower()
   return text
+
+corpus = stopwords.words('indonesian')
+def stopwords(text):
+  return ' '.join(word for word in text.split() if word not in corpus)
 
 def tokenizer(text):
   text = text.lower()
@@ -52,7 +61,7 @@ def graph_co_occurrence(x, threshold=0, show_matrics = False):
         G.add_edge(vectorizer.get_feature_names_out()[i], vectorizer.get_feature_names_out()[j], weight=weight)
   return G
 
-def extract_top_words(x, w=3, threshold=0, show_matrics=False, show_scores=False, index=None):
+def extract_top_words(x, w=3, threshold=0, show_matrics=False, index=1):
     full_text = ' '.join(word for word in x)
 
     G = graph_co_occurrence(x, threshold, show_matrics)
@@ -76,15 +85,11 @@ def extract_top_words(x, w=3, threshold=0, show_matrics=False, show_scores=False
 
     # Menggabungkan kata-kata menjadi satu string terpisah dengan koma
     keywords = ', '.join(selected_words) if selected_words else ''
+    
+    st.session_state.ranked_words = ranked_words
+    st.session_state.full_text = full_text
 
-    if show_scores:
-      print(f'Dokumen ke {index} : {full_text}')
-      print(f'{w} Kata Kunci : {keywords}')
-      print("TextRank Scores:")
-      for score, word in ranked_words:
-          print(f"Skor: {score}, Kata: {word}")
-
-    return (G, selected_words)
+    return (G, keywords)
 
 def graph_cosine_sim(x, threshold = 0.11):
   # TFIDF
@@ -103,6 +108,8 @@ def graph_cosine_sim(x, threshold = 0.11):
   return G
 
 def summarization(x, k = 4, threshold=0.11):
+  st.session_state.tokenSentence = x
+  
   # Memasukkan Nilai Cosine Similirity ke dalam Graph
   G = graph_cosine_sim(x, threshold)
 
@@ -119,7 +126,7 @@ def summarization(x, k = 4, threshold=0.11):
     if i < k:
       summary_sentences.append(x[centr[0]])
 
-  return (' '.join(summary_sentences), G)
+  return ('_' + ' '.join(summary_sentences)+ '_', G)
 
 def downloadNBmodel():
   nb_model_url = "https://drive.google.com/uc?export=download&id=1wsxFE5KutqNxYq1_atrLlnjrSK3HcE3Y"

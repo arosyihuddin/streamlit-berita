@@ -13,12 +13,14 @@ if "keywoards" not in st.session_state:
 
 if button:
   text_clean = cleaning(text)
-  tokenizing = tokenizer(text_clean)
+  stopwordsRemoval = stopwords(text_clean)
+  tokenizing = tokenizer(stopwordsRemoval)
   G, keywoards = extract_top_words(x=tokenizing, w=num_word)
   
   # Menambahkan hasil keywoards ke dalam session state
   st.session_state.keywoards = keywoards
   st.session_state.graph = G
+  st.session_state.num_word = num_word
 
 
 selected = option_menu(
@@ -30,7 +32,11 @@ selected = option_menu(
 
 if selected == "Keywoards":
   if st.session_state.keywoards:
-    st.write(st.session_state.keywoards)
+    st.write(f'**{st.session_state.num_word} Kata Kunci : {st.session_state.keywoards}**')
+    st.write(f'Dokumen : {st.session_state.full_text}')
+    st.write("TextRank Scores All Words:")
+    for score, word in st.session_state.ranked_words:
+        st.write(f"Skor: {score} -> Kata: {word}")
   
 elif selected == "Graph Keywoards":
   col1, col2 = st.columns(2)

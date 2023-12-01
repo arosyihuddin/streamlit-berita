@@ -37,9 +37,13 @@ selected = option_menu(
 
 if selected == "Summary":
   if st.session_state.summary:
-      st.write("Nilai Closeness Centrality : ",st.session_state.centrality)
-      st.write("Hasil Summarization: ")
-      st.write(st.session_state.summary)
+    sentence = st.session_state.tokenSentence
+    st.write("**Hasil Summarization:**")
+    st.write(st.session_state.summary)
+    closeness = st.session_state.centrality
+    st.write("Nilai Closeness Centrality :")
+    for sent, cln in zip(sentence, closeness):
+      st.write(f"Closeness : {cln} -> Kalimat : {sent}")
   
   
 elif selected == "Klasifikasi":
